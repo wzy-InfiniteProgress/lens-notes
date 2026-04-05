@@ -14,6 +14,8 @@ export type Database = {
           id: string;
           user_id: string;
           entry_type: "photo" | "journal";
+          journal_space: "photo_notes" | "journals" | null;
+          journal_category: "life" | "study" | "fragment" | null;
           slug: string;
           title: string;
           excerpt: string | null;
@@ -33,6 +35,8 @@ export type Database = {
           id?: string;
           user_id: string;
           entry_type?: "photo" | "journal";
+          journal_space?: "photo_notes" | "journals" | null;
+          journal_category?: "life" | "study" | "fragment" | null;
           slug: string;
           title: string;
           excerpt?: string | null;
@@ -52,6 +56,8 @@ export type Database = {
           id?: string;
           user_id?: string;
           entry_type?: "photo" | "journal";
+          journal_space?: "photo_notes" | "journals" | null;
+          journal_category?: "life" | "study" | "fragment" | null;
           slug?: string;
           title?: string;
           excerpt?: string | null;

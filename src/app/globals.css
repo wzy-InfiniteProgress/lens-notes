@@ -26,6 +26,123 @@ body {
   font-family: "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
+.editorial-english {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.hero-kicker {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-style: italic;
+  letter-spacing: 0.14em;
+}
+
+.soft-serif {
+  font-family: "Georgia", "Iowan Old Style", "Times New Roman", serif;
+  letter-spacing: 0.02em;
+}
+
+.soft-panel {
+  background: linear-gradient(180deg, rgba(252, 250, 247, 0.99), rgba(246, 243, 239, 0.99));
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    18px 18px 28px rgba(186, 179, 169, 0.28),
+    -6px -6px 10px rgba(255, 255, 255, 0.72),
+    0 1px 1px rgba(255, 255, 255, 0.52) inset,
+    0 -1px 1px rgba(205, 198, 188, 0.1) inset;
+}
+
+.soft-inset {
+  background: linear-gradient(180deg, rgba(246, 243, 239, 0.98), rgba(244, 241, 237, 0.98));
+  border: 1px solid rgba(231, 226, 220, 0.92);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.68) inset;
+}
+
+.soft-pill {
+  background: linear-gradient(180deg, rgba(248, 245, 241, 0.98), rgba(240, 236, 230, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    5px 5px 10px rgba(197, 191, 182, 0.2),
+    -3px -3px 6px rgba(255, 255, 255, 0.68);
+}
+
+.soft-knob {
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background: linear-gradient(180deg, rgba(246, 243, 239, 1), rgba(229, 224, 217, 1));
+  box-shadow:
+    4px 4px 8px rgba(194, 188, 178, 0.18),
+    -2px -2px 4px rgba(255, 255, 255, 0.72);
+}
+
+.soft-track {
+  border: 1px solid rgba(233, 228, 221, 0.9);
+  background: linear-gradient(180deg, rgba(246, 243, 239, 0.99), rgba(240, 236, 231, 0.99));
+  box-shadow:
+    4px 4px 8px rgba(197, 191, 182, 0.12),
+    -2px -2px 4px rgba(255, 255, 255, 0.52);
+}
+
+.font-title {
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  letter-spacing: 0.18em;
+}
+
+.nm-flat {
+  background: #f4f5f7;
+  box-shadow:
+    3px 3px 8px rgba(0, 0, 0, 0.03),
+    -3px -3px 8px rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition:
+    box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nm-flat-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    5px 5px 12px rgba(0, 0, 0, 0.04),
+    -5px -5px 12px rgba(255, 255, 255, 1);
+}
+
+.nm-pressed {
+  background: #f4f5f7;
+  box-shadow:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.04),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+  border: 1px solid transparent;
+  transition:
+    box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nm-input-container {
+  background: #f4f5f7;
+  box-shadow:
+    inset 3px 3px 6px rgba(0, 0, 0, 0.03),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.01);
+  transition: all 0.3s ease;
+}
+
+.nm-input-container:focus-within {
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.05),
+    inset -4px -4px 8px rgba(255, 255, 255, 1);
+}
+
 .skeleton-shimmer {
   position: relative;
   overflow: hidden;
@@ -52,9 +169,282 @@ a {
 }
 
 ::selection {
-  background: rgba(99, 102, 241, 0.18);
+  background: rgba(120, 113, 108, 0.18);
 }
 
 .prose blockquote {
   font-style: normal;
+}
+
+.tiptap-toolbar-button {
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.tiptap-toolbar-button[data-active="true"] {
+  border-color: rgba(15, 23, 42, 0.95);
+  background: rgba(15, 23, 42, 0.96);
+  color: white;
+}
+
+.tiptap-toolbar-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tiptap-editor-surface p.is-empty::before {
+  content: attr(data-placeholder);
+  color: rgba(100, 116, 139, 0.6);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap-editor-surface .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: rgba(100, 116, 139, 0.62);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap-editor-surface h2,
+.tiptap-editor-surface h3 {
+  color: #0f172a;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.tiptap-editor-surface strong {
+  font-weight: 700;
+  color: #020617;
+}
+
+.tiptap-editor-surface em {
+  font-style: italic;
+}
+
+.tiptap-editor-surface a {
+  color: #0f172a;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(15, 23, 42, 0.72);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  box-shadow: inset 0 -1px 0 rgba(15, 23, 42, 0.18);
+}
+
+.tiptap-editor-surface h2 {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.75rem;
+}
+
+.tiptap-editor-surface h3 {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 1.3rem;
+}
+
+.tiptap-editor-surface p,
+.tiptap-editor-surface ul,
+.tiptap-editor-surface ol,
+.tiptap-editor-surface blockquote,
+.tiptap-editor-surface pre {
+  margin: 0.9rem 0;
+}
+
+.tiptap-editor-surface ul,
+.tiptap-editor-surface ol {
+  padding-left: 1.4rem;
+  list-style-position: outside;
+}
+
+.tiptap-editor-surface ul {
+  list-style: disc;
+}
+
+.tiptap-editor-surface ol {
+  list-style: decimal;
+}
+
+.tiptap-editor-surface ul ul {
+  list-style: circle;
+}
+
+.tiptap-editor-surface ol ol {
+  list-style: lower-alpha;
+}
+
+.tiptap-editor-surface li,
+.journal-rich li {
+  display: list-item;
+  margin: 0.35rem 0;
+}
+
+.tiptap-editor-surface li > p {
+  margin: 0.2rem 0;
+}
+
+.tiptap-editor-surface ul > li {
+  list-style-type: disc;
+}
+
+.tiptap-editor-surface ol > li {
+  list-style-type: decimal;
+}
+
+.tiptap-editor-surface blockquote {
+  border-left: 3px solid rgba(148, 163, 184, 0.4);
+  background: rgba(248, 250, 252, 0.95);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  color: #475569;
+}
+
+.tiptap-editor-surface pre,
+.journal-rich pre {
+  overflow-x: auto;
+  border-radius: 1.25rem;
+  background: #0f172a;
+  padding: 1rem 1.1rem;
+  color: #e2e8f0;
+}
+
+.tiptap-editor-surface code,
+.journal-rich code {
+  font-family: "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.92em;
+}
+
+.journal-rich ul,
+.journal-rich ol {
+  padding-left: 1.5rem;
+  list-style-position: outside;
+}
+
+.journal-rich ul {
+  list-style: disc;
+}
+
+.journal-rich ol {
+  list-style: decimal;
+}
+
+.journal-rich li::marker {
+  color: rgba(71, 85, 105, 0.92);
+}
+
+.journal-rich ul > li {
+  list-style-type: disc;
+}
+
+.journal-rich ol > li {
+  list-style-type: decimal;
+}
+
+.journal-rich a {
+  color: #0f172a;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.article-prose {
+  --article-link: rgba(15, 23, 42, 0.94);
+  --article-link-line: rgba(15, 23, 42, 0.26);
+}
+
+.article-prose h2,
+.article-prose h3,
+.article-prose h4 {
+  letter-spacing: -0.04em;
+}
+
+.article-prose p {
+  text-wrap: pretty;
+}
+
+.article-prose ul,
+.article-prose ol {
+  padding-left: 1.6rem;
+}
+
+.article-prose li::marker {
+  color: rgba(100, 116, 139, 0.9);
+}
+
+.article-prose a {
+  color: var(--article-link);
+  text-decoration: underline;
+  text-decoration-color: var(--article-link-line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+.article-prose strong {
+  font-weight: 650;
+}
+
+.article-prose code {
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 0.6rem;
+  background: rgba(248, 250, 252, 0.92);
+  padding: 0.12rem 0.45rem;
+  color: #0f172a;
+}
+
+.article-prose-photo p {
+  font-size: 1.02rem;
+  line-height: 2rem;
+}
+
+.article-prose-photo h2 {
+  margin-top: 2rem;
+  font-size: 1.9rem;
+}
+
+.article-prose-journal > p:first-of-type,
+.article-prose-journal > div > p:first-of-type {
+  font-size: 1.18rem;
+  line-height: 2.15rem;
+  color: #475569;
+}
+
+.article-prose-journal h2 {
+  margin-top: 2.6rem;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.article-prose-journal h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.9rem;
+  font-size: 1.45rem;
+}
+
+.article-prose-journal p {
+  font-size: 1.06rem;
+  line-height: 2rem;
+  color: #475569;
+}
+
+.article-prose-journal blockquote {
+  margin: 2rem 0;
+  border-left: 0;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+}
+
+.journal-mindmap {
+  overflow: hidden;
+  margin: 2rem 0;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(255, 255, 255, 0.96));
+  padding: 1.2rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+}
+
+.journal-mindmap svg {
+  width: 100%;
+  height: auto;
 }

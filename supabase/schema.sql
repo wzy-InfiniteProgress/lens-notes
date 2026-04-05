@@ -4,6 +4,8 @@ create table if not exists public.notes (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   entry_type text not null default 'journal' check (entry_type in ('photo', 'journal')),
+  journal_space text default 'photo_notes' check (journal_space in ('photo_notes', 'journals')),
+  journal_category text check (journal_category in ('life', 'study', 'fragment')),
   slug text not null unique,
   title text not null,
   excerpt text,

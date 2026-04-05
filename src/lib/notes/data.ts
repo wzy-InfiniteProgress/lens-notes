@@ -1,6 +1,11 @@
 import { cache } from "react";
 import type { Database } from "@/lib/database.types";
-import { notes as mockNotes, type Note } from "@/content/site";
+import {
+  type JournalSpace,
+  notes as mockNotes,
+  type JournalCategory,
+  type Note,
+} from "@/content/site";
 import { hasSupabaseEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,8 +33,20 @@ function resolveStorageUrl(path: string | null | undefined) {
   return `${projectUrl}/storage/v1/object/public/uploads/${path}`;
 }
 
+function normalizeSlugCandidate(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function stripMarkup(value: string) {
+  return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function estimateReadTime(content: string) {
-  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  const words = stripMarkup(content).split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.round(words / 180));
   return `${minutes} min`;
 }
@@ -39,17 +56,54 @@ function formatLocation(content: string) {
   return match?.[0] ?? "未设置";
 }
 
+function resolveJournalCategory(note: NoteRow): JournalCategory {
+  if (note.journal_category === "life" || note.journal_category === "study" || note.journal_category === "fragment") {
+    return note.journal_category;
+  }
+
+  const text = `${note.title} ${note.excerpt ?? ""} ${note.content}`.toLowerCase();
+  if (/学习|读书|阅读|设计|系统|react|代码|研究|笔记/.test(text)) {
+    return "study";
+  }
+
+  if ((note.excerpt ?? "").length <= 40 || note.content.length <= 120) {
+    return "fragment";
+  }
+
+  return "life";
+}
+
+function resolveJournalSpace(note: NoteRow): JournalSpace {
+  if (note.journal_space === "journals") {
+    return "journals";
+  }
+
+  return "photo_notes";
+}
+
 function mapDbNote(note: NoteWithPhotos): Note {
   const sortedPhotos = [...note.photos].sort((a, b) => a.sort_order - b.sort_order);
+  const journalSpace = note.entry_type === "journal" ? resolveJournalSpace(note) : undefined;
   const resolvedCover = resolveStorageUrl(note.cover_photo_url);
-  const coverImage =
-    resolvedCover ||
-    resolveStorageUrl(sortedPhotos[0]?.storage_path) ||
+  const firstPhoto = resolveStorageUrl(sortedPhotos[0]?.storage_path);
+  const fallbackCover =
     "https://images.unsplash.com/photo-1691358364902-1fcc05d2df3e?auto=format&fit=crop&w=1200&q=80";
+  const useFallbackForJournal = note.entry_type === "journal" && journalSpace === "journals";
+  const coverSource = resolvedCover
+    ? "explicit"
+    : firstPhoto
+      ? "photo"
+      : "fallback";
+  const coverImage = resolvedCover || firstPhoto || (useFallbackForJournal ? fallbackCover : fallbackCover);
 
   return {
     id: note.id,
     entryType: note.entry_type,
+    journalSpace,
+    journalCategory:
+      note.entry_type === "journal" && journalSpace === "journals"
+        ? resolveJournalCategory(note)
+        : undefined,
     slug: note.slug,
     title: note.title,
     excerpt: note.excerpt ?? "",
@@ -59,6 +113,7 @@ function mapDbNote(note: NoteWithPhotos): Note {
     shotAt: note.shot_at ?? undefined,
     readTime: estimateReadTime(note.content),
     coverImage,
+    coverSource,
     imageAspect: "4 / 5.4",
     camera: note.camera?.trim() || "参数无",
     aperture: note.aperture?.trim() || "参数无",
@@ -118,7 +173,12 @@ export const getPublishedPhotos = cache(async () => {
 
 export const getPublishedJournals = cache(async () => {
   const notes = await getPublishedNotes();
-  return notes.filter((note) => note.entryType === "journal");
+  return notes.filter((note) => note.entryType === "journal" && note.journalSpace === "journals");
+});
+
+export const getPublishedPhotoNotes = cache(async () => {
+  const notes = await getPublishedNotes();
+  return notes.filter((note) => note.entryType === "journal" && note.journalSpace === "photo_notes");
 });
 
 export const getAdminNotes = cache(async () => {
@@ -134,8 +194,11 @@ export const getAdminNotes = cache(async () => {
 });
 
 export const getNoteBySlug = cache(async (slug: string) => {
+  const decodedSlug = normalizeSlugCandidate(slug);
+  const slugCandidates = Array.from(new Set([slug, decodedSlug]));
+
   if (!hasSupabaseEnv()) {
-    return mockNotes.find((note) => note.slug === slug);
+    return mockNotes.find((note) => slugCandidates.includes(note.slug));
   }
 
   try {
@@ -143,21 +206,21 @@ export const getNoteBySlug = cache(async (slug: string) => {
     const { data, error } = await supabase
       .from("notes")
       .select("*, photos(*)")
-      .eq("slug", slug)
+      .in("slug", slugCandidates)
       .eq("status", "published")
       .maybeSingle();
 
     if (error || !data) {
       const publishedNotes = await fetchDbNotes("published").catch(() => []);
       return (
-        publishedNotes.find((note) => note.slug === slug) ??
-        mockNotes.find((note) => note.slug === slug)
+        publishedNotes.find((note) => slugCandidates.includes(note.slug)) ??
+        mockNotes.find((note) => slugCandidates.includes(note.slug))
       );
     }
 
     return mapDbNote(data as NoteWithPhotos);
   } catch {
-    return mockNotes.find((note) => note.slug === slug);
+    return mockNotes.find((note) => slugCandidates.includes(note.slug));
   }
 });
 

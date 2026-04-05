@@ -4,12 +4,18 @@ import { StatusBanner } from "@/components/status-banner";
 import { requireAdminUser } from "@/lib/auth/session";
 
 type NewNotePageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; type?: string }>;
 };
 
 export default async function NewNotePage({ searchParams }: NewNotePageProps) {
   const { previewMode } = await requireAdminUser("/admin/new");
   const params = await searchParams;
+  const initialPublishMode =
+    params.type === "photo"
+      ? "photo"
+      : params.type === "photo_note"
+        ? "photo_note"
+        : "essay";
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#ffffff_100%)]">
@@ -23,7 +29,7 @@ export default async function NewNotePage({ searchParams }: NewNotePageProps) {
             新建内容
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-            这里可以选择发布照片或发布手记。两种内容会在首页以不同模块展示。
+            这里可以分别创建照片、照片手记和随笔。它们会进入各自的展示区域，不再混在一起。
           </p>
         </div>
         {previewMode ? (
@@ -32,7 +38,7 @@ export default async function NewNotePage({ searchParams }: NewNotePageProps) {
           </StatusBanner>
         ) : null}
         {params.error ? <StatusBanner tone="error">{params.error}</StatusBanner> : null}
-        <AdminNoteForm />
+        <AdminNoteForm initialPublishMode={initialPublishMode} />
       </main>
     </div>
   );

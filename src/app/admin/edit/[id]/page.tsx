@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { deleteNoteAction } from "@/app/admin/actions/note-actions";
 import { AdminNoteForm } from "@/components/admin-note-form";
 import { Header } from "@/components/header";
 import { StatusBanner } from "@/components/status-banner";
+import { JOURNAL_SPACE_LABELS } from "@/content/site";
 import { requireAdminUser } from "@/lib/auth/session";
 import { getAdminNoteById } from "@/lib/notes/data";
 
@@ -23,6 +25,13 @@ export default async function EditNotePage({ params, searchParams }: EditPagePro
     notFound();
   }
 
+  const adminFilter =
+    note.entryType === "photo"
+      ? "photo"
+      : note.journalSpace === "photo_notes"
+        ? "photo_notes"
+        : "journals";
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#ffffff_100%)]">
       <Header />
@@ -31,9 +40,21 @@ export default async function EditNotePage({ params, searchParams }: EditPagePro
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
             Admin / Edit
           </p>
+          <div className="mt-4">
+            <Link
+              href={`/admin?type=${adminFilter}`}
+              className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-900 hover:text-slate-900"
+            >
+              返回对应列表
+            </Link>
+          </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] text-slate-600">
-              {note.entryType === "photo" ? "Photo Entry" : "Journal Entry"}
+              {note.entryType === "photo"
+                ? "Photo Entry"
+                : note.journalSpace
+                  ? JOURNAL_SPACE_LABELS[note.journalSpace]
+                  : "Journal Entry"}
             </span>
             <span className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] text-slate-600">
               {note.status === "draft" ? "Draft" : "Published"}

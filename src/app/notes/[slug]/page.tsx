@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/header";
 import { MarkdownContent } from "@/components/markdown-content";
@@ -11,12 +11,18 @@ type NotePageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getPublishedNotes().then((notes) => notes.map((note) => ({ slug: note.slug })));
-}
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: NotePageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = (() => {
+    try {
+      return decodeURIComponent(rawSlug);
+    } catch {
+      return rawSlug;
+    }
+  })();
   const note = await getNoteBySlug(slug);
 
   if (!note) {
@@ -30,13 +36,24 @@ export async function generateMetadata({ params }: NotePageProps) {
 }
 
 export default async function NotePage({ params }: NotePageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = (() => {
+    try {
+      return decodeURIComponent(rawSlug);
+    } catch {
+      return rawSlug;
+    }
+  })();
   const [note, publishedNotes] = await Promise.all([getNoteBySlug(slug), getPublishedNotes()]);
   const resolvedNote = note ?? publishedNotes.find((item) => item.slug === slug);
   const isPhoto = resolvedNote?.entryType === "photo";
 
   if (!resolvedNote) {
     notFound();
+  }
+
+  if (resolvedNote.entryType === "journal" && resolvedNote.journalSpace === "journals") {
+    redirect(`/journals/${resolvedNote.slug}`);
   }
 
   return (

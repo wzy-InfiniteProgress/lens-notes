@@ -18,13 +18,13 @@ export function EditorialNotes({ notes }: EditorialNotesProps) {
       <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-            Journal Notes
+            Photo Notes
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-            把文字写成一段可被慢慢翻阅的景象
+            留给照片旁边的那些慢一点的句子
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-            手记不再只是附属卡片，而是一块更偏阅读的区域。它会保留图像氛围，但把叙述本身放回中心。
+            这一块只收纳与照片现场有关的手记，不会和随笔页混在一起。
           </p>
         </div>
         <Link
@@ -52,7 +52,7 @@ export function EditorialNotes({ notes }: EditorialNotesProps) {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.42)_40%,rgba(15,23,42,0.82))]" />
           <div className="relative flex min-h-[31rem] flex-col justify-end p-7 text-white sm:p-9">
             <p className="text-xs font-semibold uppercase tracking-[0.34em] text-white/68">
-              Featured Journal
+              Featured Photo Note
             </p>
             <h3 className="mt-5 max-w-2xl text-3xl font-semibold tracking-tight sm:text-5xl">
               {featured.title}

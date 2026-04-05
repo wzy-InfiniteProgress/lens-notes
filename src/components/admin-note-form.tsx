@@ -3,25 +3,34 @@
 import { useMemo, useState } from "react";
 import { upsertNoteAction } from "@/app/admin/actions/note-actions";
 import { FormSubmitButtons } from "@/components/form-submit-buttons";
-import type { Note } from "@/content/site";
+import {
+  JOURNAL_CATEGORY_LABELS,
+  JOURNAL_SPACE_LABELS,
+  type JournalCategory,
+  type JournalSpace,
+  type Note,
+} from "@/content/site";
+import { RichTextEditor } from "@/components/rich-text-editor";
 import { Uploader, type ManagedPhoto } from "@/components/uploader";
 import type { ExtractedPhotoMetadata } from "@/lib/photo-metadata";
+import { slugify } from "@/lib/slug";
+
+const JOURNAL_CATEGORY_OPTIONS = Object.entries(JOURNAL_CATEGORY_LABELS) as Array<
+  [JournalCategory, string]
+>;
 
 type AdminNoteFormProps = {
   note?: Note;
+  initialPublishMode?: PublishMode;
 };
 
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[\s_]+/g, "-")
-    .replace(/[^a-z0-9-\u4e00-\u9fa5]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+type PublishMode = "photo" | "photo_note" | "essay";
+
+function stripMarkup(value: string) {
+  return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-export function AdminNoteForm({ note }: AdminNoteFormProps) {
+export function AdminNoteForm({ note, initialPublishMode }: AdminNoteFormProps) {
   const initialPhotos = useMemo<ManagedPhoto[]>(
     () =>
       (note?.photos ?? []).map((photo) => ({
@@ -33,7 +42,15 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
     [note],
   );
 
-  const [entryType, setEntryType] = useState<"photo" | "journal">(note?.entryType ?? "photo");
+  const [entryType, setEntryType] = useState<"photo" | "journal">(
+    note?.entryType ?? (initialPublishMode === "photo" ? "photo" : "journal"),
+  );
+  const [journalSpace, setJournalSpace] = useState<JournalSpace>(
+    note?.journalSpace ?? (initialPublishMode === "photo_note" ? "photo_notes" : "journals"),
+  );
+  const [journalCategory, setJournalCategory] = useState<JournalCategory>(
+    note?.journalCategory ?? "life",
+  );
   const [status, setStatus] = useState<"draft" | "published">(note?.status ?? "draft");
   const [coverPhotoUrl, setCoverPhotoUrl] = useState(
     note?.photos.find((photo) => photo.src === note.coverImage)?.storagePath ??
@@ -53,13 +70,22 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
   const [aperture, setAperture] = useState(note?.aperture ?? "");
   const [shutterSpeed, setShutterSpeed] = useState(note?.shutterSpeed ?? "");
   const [iso, setIso] = useState(note?.iso ?? "");
+  const plainContent = useMemo(() => stripMarkup(content), [content]);
+  const richMinutes = Math.max(1, Math.round(plainContent.split(/\s+/).filter(Boolean).length / 180));
+  const publishMode: PublishMode =
+    entryType === "photo" ? "photo" : journalSpace === "photo_notes" ? "photo_note" : "essay";
 
-  const previewTitle = title || (entryType === "photo" ? "未命名照片" : "未命名手记");
+  const previewTitle =
+    title || (publishMode === "photo" ? "未命名照片" : publishMode === "photo_note" ? "未命名照片手记" : "未命名随笔");
   const previewExcerpt =
     excerpt ||
-    (entryType === "photo"
+    (publishMode === "photo"
       ? "这里会显示照片标题下方的简短说明。"
-      : "这里会显示手记卡片里的摘要。建议写成一句有画面感的引子。");
+      : plainContent
+        ? `${plainContent.slice(0, 72)}${plainContent.length > 72 ? "..." : ""}`
+        : publishMode === "photo_note"
+          ? "这里会显示照片手记卡片里的摘要。"
+          : "这里会显示随笔卡片里的摘要。");
   const previewCover =
     photos.find((photo) => photo.storagePath === coverPhotoUrl || photo.src === coverPhotoUrl)?.src ||
     coverPhotoUrl ||
@@ -87,6 +113,21 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
     }
   }
 
+  function handlePublishModeChange(nextMode: PublishMode) {
+    if (publishMode === "essay" && nextMode !== "essay") {
+      setContent(plainContent);
+    }
+
+    if (nextMode === "photo") {
+      setEntryType("photo");
+      setJournalSpace("photo_notes");
+      return;
+    }
+
+    setEntryType("journal");
+    setJournalSpace(nextMode === "photo_note" ? "photo_notes" : "journals");
+  }
+
   return (
     <form
       action={upsertNoteAction}
@@ -95,6 +136,8 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
       <input type="hidden" name="id" value={note?.id ?? ""} />
       <input type="hidden" name="photosPayload" value={JSON.stringify(photos)} />
       <input type="hidden" name="entryType" value={entryType} />
+      <input type="hidden" name="journalSpace" value={journalSpace} />
+      <input type="hidden" name="journalCategory" value={journalCategory} />
       <input type="hidden" name="status" value={status} />
 
       <div className="flex flex-wrap items-center gap-3">
@@ -102,21 +145,30 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
         <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1">
           <button
             type="button"
-            onClick={() => setEntryType("photo")}
+            onClick={() => handlePublishModeChange("photo")}
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              entryType === "photo" ? "bg-slate-900 text-white" : "text-slate-600"
+              publishMode === "photo" ? "bg-slate-900 text-white" : "text-slate-600"
             }`}
           >
             发布照片
           </button>
           <button
             type="button"
-            onClick={() => setEntryType("journal")}
+            onClick={() => handlePublishModeChange("photo_note")}
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              entryType === "journal" ? "bg-slate-900 text-white" : "text-slate-600"
+              publishMode === "photo_note" ? "bg-slate-900 text-white" : "text-slate-600"
             }`}
           >
-            发布手记
+            照片手记
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePublishModeChange("essay")}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              publishMode === "essay" ? "bg-slate-900 text-white" : "text-slate-600"
+            }`}
+          >
+            发布随笔
           </button>
         </div>
         <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
@@ -132,7 +184,13 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
               <input
                 name="title"
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-slate-900"
-                placeholder={entryType === "photo" ? "输入照片标题" : "输入手记标题"}
+                placeholder={
+                  publishMode === "photo"
+                    ? "输入照片标题"
+                    : publishMode === "photo_note"
+                      ? "输入照片手记标题"
+                      : "输入随笔标题"
+                }
                 value={title}
                 onChange={(event) => {
                   const nextTitle = event.target.value;
@@ -165,7 +223,13 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
             <textarea
               name="excerpt"
               className="min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-slate-900"
-              placeholder={entryType === "photo" ? "用一句话介绍这张照片" : "用于首页卡片展示的简短摘要"}
+              placeholder={
+                publishMode === "photo"
+                  ? "用一句话介绍这张照片"
+                  : publishMode === "photo_note"
+                    ? "用于首页照片手记卡片展示的简短摘要"
+                    : "用于随笔列表展示的简短摘要"
+              }
               value={excerpt}
               onChange={(event) => setExcerpt(event.target.value)}
             />
@@ -239,7 +303,6 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
               <label className="block space-y-2">
                 <span className="text-sm font-medium text-slate-700">照片说明</span>
                 <textarea
-                  name="content"
                   className="min-h-40 w-full rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 text-slate-900 outline-none transition focus:border-slate-900"
                   placeholder="写下这张照片的现场、光线或拍摄时的感受。"
                   value={content}
@@ -250,6 +313,31 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
             </>
           ) : (
             <>
+              {journalSpace === "journals" ? (
+                <div className="space-y-3">
+                  <span className="text-sm font-medium text-slate-700">随笔分类</span>
+                  <div className="flex flex-wrap gap-3">
+                    {JOURNAL_CATEGORY_OPTIONS.map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setJournalCategory(value)}
+                        className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                          journalCategory === value
+                            ? "bg-slate-900 text-white"
+                            : "border border-slate-200 bg-white text-slate-600 hover:border-slate-900 hover:text-slate-900"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-7 text-slate-600">
+                  这类内容会出现在首页的照片手记区域，更适合写与某次拍摄、旅途或现场气氛有关的文字。
+                </div>
+              )}
               <label className="space-y-2">
                 <span className="text-sm font-medium text-slate-700">地名</span>
                 <input
@@ -261,18 +349,25 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
                 />
               </label>
               <label className="block space-y-2">
-                <span className="text-sm font-medium text-slate-700">正文（Markdown）</span>
-                <textarea
-                  name="content"
-                  className="min-h-72 w-full rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 text-slate-900 outline-none transition focus:border-slate-900"
-                  placeholder="# 今天记录的，是一个更偏文字的片段..."
-                  value={content}
-                  onChange={(event) => setContent(event.target.value)}
-                  required
-                />
+                <span className="text-sm font-medium text-slate-700">
+                  {journalSpace === "journals" ? "正文（富文本）" : "正文（Markdown）"}
+                </span>
+                {journalSpace === "journals" ? (
+                  <RichTextEditor value={content} onChange={setContent} />
+                ) : (
+                  <textarea
+                    className="min-h-72 w-full rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 text-slate-900 outline-none transition focus:border-slate-900"
+                    placeholder="# 今天记录的，是一个更偏文字的片段..."
+                    value={content}
+                    onChange={(event) => setContent(event.target.value)}
+                    required
+                  />
+                )}
               </label>
             </>
           )}
+
+          <input type="hidden" name="content" value={content} />
 
           <label className="space-y-2">
             <span className="text-sm font-medium text-slate-700">封面图</span>
@@ -303,7 +398,11 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/92 via-slate-950/30 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-3.5">
                 <p className="text-[10px] uppercase tracking-[0.28em] text-white/55">
-                  {entryType === "photo" ? "Photo Preview" : "Journal Preview"}
+                  {publishMode === "photo"
+                    ? "Photo Preview"
+                    : publishMode === "photo_note"
+                      ? "Photo Note Preview"
+                      : "Essay Preview"}
                 </p>
                 <h3 className="mt-2 text-lg font-semibold leading-tight tracking-tight text-white">{previewTitle}</h3>
                 <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/72">{previewExcerpt}</p>
@@ -320,13 +419,34 @@ export function AdminNoteForm({ note }: AdminNoteFormProps) {
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-slate-500">预计阅读</p>
-                <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{minutes} 分钟</p>
+                <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+                  {entryType === "journal" && journalSpace === "journals" ? richMinutes : minutes} 分钟
+                </p>
               </div>
             </div>
             <div className="mt-3 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-600">
               <p>当前地址</p>
-              <p className="mt-1 break-all font-medium text-slate-900">/notes/{slug || "your-slug"}</p>
+              <p className="mt-1 break-all font-medium text-slate-900">
+                {entryType === "photo" ? "/notes/" : journalSpace === "journals" ? "/journals/" : "/notes/"}
+                {slug || "your-slug"}
+              </p>
             </div>
+            {entryType === "journal" ? (
+              <div className="mt-3 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                <p>内容归属</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {JOURNAL_SPACE_LABELS[journalSpace]}
+                </p>
+              </div>
+            ) : null}
+            {entryType === "journal" && journalSpace === "journals" ? (
+              <div className="mt-3 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                <p>随笔分类</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {JOURNAL_CATEGORY_LABELS[journalCategory]}
+                </p>
+              </div>
+            ) : null}
             <div className="mt-3 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-600">
               <p>发布状态</p>
               <p className="mt-1 font-medium text-slate-900">{status === "draft" ? "草稿" : "已发布"}</p>

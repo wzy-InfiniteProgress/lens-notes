@@ -6,10 +6,27 @@ export type NotePhoto = {
   caption?: string;
 };
 
+export const JOURNAL_CATEGORY_LABELS = {
+  life: "生活笔记",
+  study: "学习笔记",
+  fragment: "碎片笔记",
+} as const;
+
+export type JournalCategory = keyof typeof JOURNAL_CATEGORY_LABELS;
+
+export const JOURNAL_SPACE_LABELS = {
+  photo_notes: "照片手记",
+  journals: "随笔",
+} as const;
+
+export type JournalSpace = keyof typeof JOURNAL_SPACE_LABELS;
+
 export type Note = {
   id: string;
   slug: string;
   entryType: "photo" | "journal";
+  journalSpace?: JournalSpace;
+  journalCategory?: JournalCategory;
   title: string;
   excerpt: string;
   content: string;
@@ -18,6 +35,7 @@ export type Note = {
   shotAt?: string;
   readTime: string;
   coverImage: string;
+  coverSource?: "explicit" | "photo" | "fallback";
   imageAspect: string;
   camera: string;
   aperture: string;
@@ -163,6 +181,7 @@ export const notes: Note[] = [
     id: "journal-1",
     slug: "notes-after-a-rainy-walk",
     entryType: "journal",
+    journalSpace: "photo_notes",
     title: "雨后散步，城市像刚被轻轻擦拭过",
     excerpt: "一场不大的雨，会把平时看不见的反光和边缘都慢慢推出来，让城市显得更诚实。",
     content: `# 雨后的街道总会慢下来
@@ -199,6 +218,7 @@ export const notes: Note[] = [
     id: "journal-2",
     slug: "quiet-hotel-morning",
     entryType: "journal",
+    journalSpace: "photo_notes",
     title: "住进一间安静酒店后，我反而更愿意早起",
     excerpt: "陌生空间会重置日常节奏，窗帘缝里的光、桌上的水杯、刚收好的行李，都像在提醒人重新开始。",
     content: `# 旅途中最容易忽略的是房间里的安静
@@ -221,6 +241,7 @@ export const notes: Note[] = [
     id: "journal-3",
     slug: "one-line-about-spring",
     entryType: "journal",
+    journalSpace: "photo_notes",
     title: "春天的风比任何滤镜都更会修饰画面",
     excerpt: "同样一条街在春天会突然轻一些，树叶还没完全长好，影子却已经开始有了松动感。",
     content: `# 风会改变画面的表情
@@ -239,6 +260,94 @@ export const notes: Note[] = [
     status: "published",
     photos: [],
   },
+  {
+    id: "journal-4",
+    slug: "reading-notes-about-interface-silence",
+    entryType: "journal",
+    journalSpace: "journals",
+    journalCategory: "study",
+    title: "界面安静下来以后，信息反而更容易被看见",
+    excerpt: "最近在反复看一些旧杂志和产品界面，发现真正耐看的设计几乎都懂得退后一步，把注意力让给内容本身。",
+    content: `# 关于安静界面的几条学习笔记
+
+当页面上的每一块都想被看见时，真正重要的东西反而会被稀释。
+
+## 这周记下来的三个判断
+
+- 好的留白不是空，而是节奏
+- 颜色越克制，层级越要准确
+- 动效的作用不是热闹，而是减轻切换时的突兀
+
+这些笔记还没有完全成熟，但已经足够影响我最近的排版判断。`,
+    date: "2026-02-10T20:10:00.000Z",
+    location: "上海",
+    readTime: "3 min",
+    coverImage:
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+    imageAspect: "4 / 5",
+    camera: "参数无",
+    aperture: "参数无",
+    shutterSpeed: "参数无",
+    iso: "参数无",
+    status: "published",
+    photos: [],
+  },
+  {
+    id: "journal-5",
+    slug: "notes-on-small-daily-order",
+    entryType: "journal",
+    journalSpace: "journals",
+    journalCategory: "life",
+    title: "把生活重新摆回秩序里，往往从一张桌子开始",
+    excerpt: "最近在练习更慢一点地生活。擦桌子、折衣服、整理抽屉，看起来都很小，但会让一天变得更安静。",
+    content: `# 日常秩序感并不来自效率
+
+很多时候真正安定人的，不是完成了多少事，而是空间终于和心绪重新对齐。
+
+## 今天做的三件小事
+
+- 把旧纸张按时间归档
+- 留下桌面中央的一块空白
+- 给常用笔记本重新贴上标签
+
+这些动作都很小，但会让人重新意识到，生活也可以被温柔地整理。`,
+    date: "2026-01-26T08:00:00.000Z",
+    location: "杭州",
+    readTime: "3 min",
+    coverImage:
+      "https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1200&q=80",
+    imageAspect: "4 / 5",
+    camera: "参数无",
+    aperture: "参数无",
+    shutterSpeed: "参数无",
+    iso: "参数无",
+    status: "published",
+    photos: [],
+  },
+  {
+    id: "journal-6",
+    slug: "fragment-about-reading-at-night",
+    entryType: "journal",
+    journalSpace: "journals",
+    journalCategory: "fragment",
+    title: "夜里读书时，世界会自动把杂音调低一点",
+    excerpt: "有些句子在白天只是信息，到了夜里才会真正落进心里。",
+    content: `# 一则碎片
+
+夜深时读到一句喜欢的话，窗外没有风，房间里只剩纸页翻动的声音。那一刻不会留下很大的结论，但会让人愿意继续读下去。`,
+    date: "2026-01-05T22:18:00.000Z",
+    location: "上海",
+    readTime: "1 min",
+    coverImage:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80",
+    imageAspect: "4 / 5",
+    camera: "参数无",
+    aperture: "参数无",
+    shutterSpeed: "参数无",
+    iso: "参数无",
+    status: "published",
+    photos: [],
+  },
 ];
 
 export function getPublishedPhotos() {
@@ -246,5 +355,19 @@ export function getPublishedPhotos() {
 }
 
 export function getPublishedJournals() {
-  return notes.filter((note) => note.status === "published" && note.entryType === "journal");
+  return notes.filter(
+    (note) =>
+      note.status === "published" &&
+      note.entryType === "journal" &&
+      note.journalSpace === "journals",
+  );
+}
+
+export function getPublishedPhotoNotes() {
+  return notes.filter(
+    (note) =>
+      note.status === "published" &&
+      note.entryType === "journal" &&
+      note.journalSpace === "photo_notes",
+  );
 }
