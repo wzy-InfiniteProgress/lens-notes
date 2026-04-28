@@ -69,8 +69,8 @@ export default async function NotePage({ params }: NotePageProps) {
           返回首页
         </Link>
         {isPhoto ? (
-          <article className="overflow-hidden rounded-[2.5rem] border border-white/70 bg-white/80 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <div className="relative flex min-h-[72vh] items-center justify-center overflow-hidden bg-slate-950">
+          <article className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+            <div className="relative flex min-h-[68vh] items-center justify-center overflow-hidden bg-[linear-gradient(135deg,_#eef2f5,_#fbfbfc_46%,_#e8edf2)] px-4 py-7 sm:px-8 sm:py-9">
               <Image
                 src={resolvedNote.coverImage}
                 alt={resolvedNote.title}
@@ -79,10 +79,11 @@ export default async function NotePage({ params }: NotePageProps) {
                 quality={72}
                 placeholder="blur"
                 blurDataURL={IMAGE_BLUR_DATA_URL}
-                className="object-cover opacity-25 blur-2xl scale-110"
+                className="object-cover opacity-18 blur-3xl scale-110 saturate-75"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/10 to-slate-950/45" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.72),_transparent_44%),linear-gradient(180deg,_rgba(255,255,255,0.62),_rgba(248,250,252,0.92))]" />
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white/70 to-transparent" />
               <Image
                 src={resolvedNote.coverImage}
                 alt={resolvedNote.title}
@@ -92,7 +93,7 @@ export default async function NotePage({ params }: NotePageProps) {
                 quality={78}
                 placeholder="blur"
                 blurDataURL={IMAGE_BLUR_DATA_URL}
-                className="relative z-10 h-auto max-h-[78vh] w-auto max-w-full object-contain shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                className="relative z-10 h-auto max-h-[72vh] w-auto max-w-full rounded-[1rem] object-contain shadow-[0_18px_56px_rgba(15,23,42,0.14)] ring-1 ring-white/80"
                 priority
               />
             </div>
@@ -121,9 +122,9 @@ export default async function NotePage({ params }: NotePageProps) {
                       {resolvedNote.photos.map((photo) => (
                         <figure
                           key={photo.id}
-                          className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950"
+                          className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-100"
                         >
-                          <div className="relative flex min-h-[24rem] items-center justify-center">
+                          <div className="relative flex min-h-[24rem] items-center justify-center bg-[linear-gradient(135deg,_#eef2f5,_#ffffff_45%,_#e5e7eb)] px-4 py-5 sm:px-6 sm:py-7">
                             <Image
                               src={photo.src}
                               alt={photo.alt}
@@ -132,8 +133,9 @@ export default async function NotePage({ params }: NotePageProps) {
                               quality={55}
                               placeholder="blur"
                               blurDataURL={IMAGE_BLUR_DATA_URL}
-                              className="object-cover opacity-18 blur-2xl scale-110"
+                              className="object-cover opacity-14 blur-3xl scale-110 saturate-75"
                             />
+                            <div className="absolute inset-0 bg-white/42" />
                             <Image
                               src={photo.src}
                               alt={photo.alt}
@@ -143,7 +145,7 @@ export default async function NotePage({ params }: NotePageProps) {
                               quality={76}
                               placeholder="blur"
                               blurDataURL={IMAGE_BLUR_DATA_URL}
-                              className="relative z-10 h-auto max-h-[78vh] w-auto max-w-full object-contain"
+                              className="relative z-10 h-auto max-h-[76vh] w-auto max-w-full rounded-[1rem] object-contain shadow-[0_18px_54px_rgba(15,23,42,0.14)] ring-1 ring-white/75"
                             />
                           </div>
                           {photo.caption ? (
