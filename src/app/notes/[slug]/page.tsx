@@ -70,7 +70,7 @@ export default async function NotePage({ params }: NotePageProps) {
         </Link>
         {isPhoto ? (
           <article className="overflow-hidden rounded-[2.5rem] border border-white/70 bg-white/80 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <div className="relative aspect-[16/9] overflow-hidden">
+            <div className="relative flex min-h-[72vh] items-center justify-center overflow-hidden bg-slate-950">
               <Image
                 src={resolvedNote.coverImage}
                 alt={resolvedNote.title}
@@ -79,10 +79,22 @@ export default async function NotePage({ params }: NotePageProps) {
                 quality={72}
                 placeholder="blur"
                 blurDataURL={IMAGE_BLUR_DATA_URL}
-                className="object-cover"
+                className="object-cover opacity-25 blur-2xl scale-110"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-slate-950/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/10 to-slate-950/45" />
+              <Image
+                src={resolvedNote.coverImage}
+                alt={resolvedNote.title}
+                width={1800}
+                height={1400}
+                sizes="(max-width: 768px) 100vw, 1100px"
+                quality={78}
+                placeholder="blur"
+                blurDataURL={IMAGE_BLUR_DATA_URL}
+                className="relative z-10 h-auto max-h-[78vh] w-auto max-w-full object-contain shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                priority
+              />
             </div>
 
             <div className="grid gap-10 px-6 py-8 sm:px-10 sm:py-10 lg:grid-cols-[minmax(0,1fr)_260px]">
@@ -105,24 +117,33 @@ export default async function NotePage({ params }: NotePageProps) {
                 {resolvedNote.photos.length > 0 ? (
                   <section className="space-y-5 pt-4">
                     <h2 className="text-2xl font-semibold tracking-tight text-slate-900">延伸图集</h2>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      {resolvedNote.photos.map((photo, index) => (
+                    <div className="grid gap-5">
+                      {resolvedNote.photos.map((photo) => (
                         <figure
                           key={photo.id}
-                          className={`overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-50 ${
-                            index % 3 === 0 ? "sm:col-span-2" : ""
-                          }`}
+                          className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950"
                         >
-                          <div className={`relative ${index % 3 === 0 ? "aspect-[16/9]" : "aspect-[4/5]"}`}>
+                          <div className="relative flex min-h-[24rem] items-center justify-center">
                             <Image
                               src={photo.src}
                               alt={photo.alt}
                               fill
-                              sizes="(max-width: 768px) 100vw, 50vw"
-                              quality={68}
+                              sizes="100vw"
+                              quality={55}
                               placeholder="blur"
                               blurDataURL={IMAGE_BLUR_DATA_URL}
-                              className="object-cover"
+                              className="object-cover opacity-18 blur-2xl scale-110"
+                            />
+                            <Image
+                              src={photo.src}
+                              alt={photo.alt}
+                              width={1600}
+                              height={1200}
+                              sizes="(max-width: 768px) 100vw, 900px"
+                              quality={76}
+                              placeholder="blur"
+                              blurDataURL={IMAGE_BLUR_DATA_URL}
+                              className="relative z-10 h-auto max-h-[78vh] w-auto max-w-full object-contain"
                             />
                           </div>
                           {photo.caption ? (
