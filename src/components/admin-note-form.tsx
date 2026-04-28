@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { upsertNoteAction } from "@/app/admin/actions/note-actions";
 import { FormSubmitButtons } from "@/components/form-submit-buttons";
@@ -12,6 +13,7 @@ import {
 } from "@/content/site";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { Uploader, type ManagedPhoto } from "@/components/uploader";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 import type { ExtractedPhotoMetadata } from "@/lib/photo-metadata";
 import { slugify } from "@/lib/slug";
 
@@ -385,12 +387,15 @@ export function AdminNoteForm({ note, initialPublishMode }: AdminNoteFormProps) 
           <div className="overflow-hidden rounded-[1.35rem] border border-white/70 bg-slate-950 text-white shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
             <div className="relative aspect-[4/3.7] overflow-hidden bg-slate-900">
               {previewCover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={previewCover}
                   alt={previewTitle}
-                  className="h-full w-full object-cover"
-                  referrerPolicy="no-referrer"
+                  fill
+                  sizes="220px"
+                  quality={64}
+                  placeholder="blur"
+                  blurDataURL={IMAGE_BLUR_DATA_URL}
+                  className="object-cover"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-sm text-white/45">封面预览</div>

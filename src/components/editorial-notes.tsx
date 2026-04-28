@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { Note } from "@/content/site";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 
 type EditorialNotesProps = {
   notes: Note[];
@@ -41,13 +43,15 @@ export function EditorialNotes({ notes }: EditorialNotesProps) {
           href={`/notes/${featured.slug}`}
           className="group relative overflow-hidden rounded-[2.4rem] border border-white/50 shadow-[0_18px_56px_rgba(15,23,42,0.12)]"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={featured.coverImage}
             alt={featured.title}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+            fill
+            sizes="(max-width: 1024px) 100vw, 720px"
+            quality={66}
+            placeholder="blur"
+            blurDataURL={IMAGE_BLUR_DATA_URL}
+            className="object-cover transition duration-700 group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.42)_40%,rgba(15,23,42,0.82))]" />
           <div className="relative flex min-h-[31rem] flex-col justify-end p-7 text-white sm:p-9">
@@ -77,13 +81,15 @@ export function EditorialNotes({ notes }: EditorialNotesProps) {
               href={`/notes/${note.slug}`}
               className="group relative overflow-hidden rounded-[2rem] border border-white/45 shadow-[0_16px_48px_rgba(15,23,42,0.10)]"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={note.coverImage}
                 alt={note.title}
-                loading="lazy"
-                referrerPolicy="no-referrer"
-                className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                fill
+                sizes="(max-width: 1024px) 100vw, 480px"
+                quality={66}
+                placeholder="blur"
+                blurDataURL={IMAGE_BLUR_DATA_URL}
+                className="object-cover transition duration-700 group-hover:scale-[1.03]"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.12),rgba(15,23,42,0.48)_44%,rgba(15,23,42,0.82))]" />
               <div className="relative flex min-h-[15rem] flex-col justify-end p-6 text-white">

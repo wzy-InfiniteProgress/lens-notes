@@ -5,8 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/header";
 import { MarkdownContent } from "@/components/markdown-content";
 import { NoteMeta } from "@/components/note-meta";
-import { RichJournalContent } from "@/components/rich-journal-content";
 import { getNoteBySlug, getPublishedJournals } from "@/lib/notes/data";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 
 type JournalDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -83,6 +83,9 @@ export default async function JournalDetailPage({ params }: JournalDetailPagePro
                   alt={resolvedNote.title}
                   fill
                   sizes="100vw"
+                  quality={70}
+                  placeholder="blur"
+                  blurDataURL={IMAGE_BLUR_DATA_URL}
                   className="object-cover opacity-65 scale-[1.05]"
                   priority
                 />
@@ -115,7 +118,10 @@ export default async function JournalDetailPage({ params }: JournalDetailPagePro
               </div>
 
             {resolvedNote.content.trim().startsWith("<") ? (
-              <RichJournalContent content={resolvedNote.content} />
+              <div
+                className="rich-journal-content"
+                dangerouslySetInnerHTML={{ __html: resolvedNote.content }}
+              />
             ) : (
               <MarkdownContent content={resolvedNote.content} variant="journal" />
             )}
@@ -135,6 +141,9 @@ export default async function JournalDetailPage({ params }: JournalDetailPagePro
                       alt={resolvedNote.photos[0].alt}
                       fill
                       sizes="100vw"
+                      quality={70}
+                      placeholder="blur"
+                      blurDataURL={IMAGE_BLUR_DATA_URL}
                       className="object-cover"
                     />
                   </div>
@@ -160,6 +169,9 @@ export default async function JournalDetailPage({ params }: JournalDetailPagePro
                             alt={photo.alt}
                             fill
                             sizes="(max-width: 768px) 100vw, 50vw"
+                            quality={68}
+                            placeholder="blur"
+                            blurDataURL={IMAGE_BLUR_DATA_URL}
                             className="object-cover"
                           />
                         </div>

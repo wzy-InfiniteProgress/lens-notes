@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { hasSupabaseEnv } from "@/lib/env";
+import { getAdminEmails, hasSupabaseEnv } from "@/lib/env";
 
 export async function getOptionalUser() {
   if (!hasSupabaseEnv()) {
@@ -27,6 +27,13 @@ export async function requireAdminUser(nextPath = "/admin") {
 
   if (!user) {
     redirect(`/auth/sign-in?next=${encodeURIComponent(nextPath)}`);
+  }
+
+  const adminEmails = getAdminEmails();
+  const userEmail = user.email?.toLowerCase();
+
+  if (adminEmails.length > 0 && (!userEmail || !adminEmails.includes(userEmail))) {
+    redirect("/");
   }
 
   return { user, previewMode: false };

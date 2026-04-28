@@ -6,7 +6,7 @@ import {
   type JournalCategory,
   type Note,
 } from "@/content/site";
-import { hasSupabaseEnv } from "@/lib/env";
+import { hasSupabaseEnv, isProductionRuntime } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 type NoteRow = Database["public"]["Tables"]["notes"]["Row"];
@@ -43,6 +43,10 @@ function normalizeSlugCandidate(value: string) {
 
 function stripMarkup(value: string) {
   return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function shouldUseMockContent() {
+  return !hasSupabaseEnv() && !isProductionRuntime();
 }
 
 function estimateReadTime(content: string) {
@@ -151,7 +155,7 @@ async function fetchDbNotes(status?: "draft" | "published") {
 }
 
 export const getPublishedNotes = cache(async () => {
-  if (!hasSupabaseEnv()) {
+  if (shouldUseMockContent()) {
     return mockNotes
       .filter((note) => note.status === "published")
       .sort((a, b) => +new Date(b.date) - +new Date(a.date));
@@ -160,6 +164,10 @@ export const getPublishedNotes = cache(async () => {
   try {
     return await fetchDbNotes("published");
   } catch {
+    if (isProductionRuntime()) {
+      return [];
+    }
+
     return mockNotes
       .filter((note) => note.status === "published")
       .sort((a, b) => +new Date(b.date) - +new Date(a.date));
@@ -182,13 +190,17 @@ export const getPublishedPhotoNotes = cache(async () => {
 });
 
 export const getAdminNotes = cache(async () => {
-  if (!hasSupabaseEnv()) {
+  if (shouldUseMockContent()) {
     return [...mockNotes].sort((a, b) => +new Date(b.date) - +new Date(a.date));
   }
 
   try {
     return await fetchDbNotes();
   } catch {
+    if (isProductionRuntime()) {
+      return [];
+    }
+
     return [...mockNotes].sort((a, b) => +new Date(b.date) - +new Date(a.date));
   }
 });
@@ -197,7 +209,7 @@ export const getNoteBySlug = cache(async (slug: string) => {
   const decodedSlug = normalizeSlugCandidate(slug);
   const slugCandidates = Array.from(new Set([slug, decodedSlug]));
 
-  if (!hasSupabaseEnv()) {
+  if (shouldUseMockContent()) {
     return mockNotes.find((note) => slugCandidates.includes(note.slug));
   }
 
@@ -214,18 +226,22 @@ export const getNoteBySlug = cache(async (slug: string) => {
       const publishedNotes = await fetchDbNotes("published").catch(() => []);
       return (
         publishedNotes.find((note) => slugCandidates.includes(note.slug)) ??
-        mockNotes.find((note) => slugCandidates.includes(note.slug))
+        (isProductionRuntime() ? undefined : mockNotes.find((note) => slugCandidates.includes(note.slug)))
       );
     }
 
     return mapDbNote(data as NoteWithPhotos);
   } catch {
+    if (isProductionRuntime()) {
+      return undefined;
+    }
+
     return mockNotes.find((note) => slugCandidates.includes(note.slug));
   }
 });
 
 export const getAdminNoteById = cache(async (id: string) => {
-  if (!hasSupabaseEnv()) {
+  if (shouldUseMockContent()) {
     return mockNotes.find((note) => note.id === id);
   }
 
@@ -238,11 +254,15 @@ export const getAdminNoteById = cache(async (id: string) => {
       .maybeSingle();
 
     if (error || !data) {
-      return mockNotes.find((note) => note.id === id);
+      return isProductionRuntime() ? undefined : mockNotes.find((note) => note.id === id);
     }
 
     return mapDbNote(data as NoteWithPhotos);
   } catch {
+    if (isProductionRuntime()) {
+      return undefined;
+    }
+
     return mockNotes.find((note) => note.id === id);
   }
 });

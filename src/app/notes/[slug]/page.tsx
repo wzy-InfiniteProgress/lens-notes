@@ -6,6 +6,7 @@ import { Header } from "@/components/header";
 import { MarkdownContent } from "@/components/markdown-content";
 import { NoteMeta } from "@/components/note-meta";
 import { getNoteBySlug, getPublishedNotes } from "@/lib/notes/data";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 
 type NotePageProps = {
   params: Promise<{ slug: string }>;
@@ -75,6 +76,9 @@ export default async function NotePage({ params }: NotePageProps) {
                 alt={resolvedNote.title}
                 fill
                 sizes="100vw"
+                quality={72}
+                placeholder="blur"
+                blurDataURL={IMAGE_BLUR_DATA_URL}
                 className="object-cover"
                 priority
               />
@@ -115,6 +119,9 @@ export default async function NotePage({ params }: NotePageProps) {
                               alt={photo.alt}
                               fill
                               sizes="(max-width: 768px) 100vw, 50vw"
+                              quality={68}
+                              placeholder="blur"
+                              blurDataURL={IMAGE_BLUR_DATA_URL}
                               className="object-cover"
                             />
                           </div>
@@ -166,6 +173,9 @@ export default async function NotePage({ params }: NotePageProps) {
                 alt={resolvedNote.title}
                 fill
                 sizes="100vw"
+                quality={70}
+                placeholder="blur"
+                blurDataURL={IMAGE_BLUR_DATA_URL}
                 className="object-cover opacity-65 scale-[1.05]"
                 priority
               />
@@ -210,6 +220,9 @@ export default async function NotePage({ params }: NotePageProps) {
                         alt={resolvedNote.photos[0].alt}
                         fill
                         sizes="100vw"
+                        quality={70}
+                        placeholder="blur"
+                        blurDataURL={IMAGE_BLUR_DATA_URL}
                         className="object-cover"
                       />
                     </div>
@@ -235,6 +248,9 @@ export default async function NotePage({ params }: NotePageProps) {
                               alt={photo.alt}
                               fill
                               sizes="(max-width: 768px) 100vw, 50vw"
+                              quality={68}
+                              placeholder="blur"
+                              blurDataURL={IMAGE_BLUR_DATA_URL}
                               className="object-cover"
                             />
                           </div>

@@ -6,8 +6,8 @@
 
 - 首页按两大模块展示内容
 - 照片内容使用瀑布流展示
-- 手记内容使用独立阅读区展示
-- 照片详情页和手记详情页采用不同排版
+- 照片手记和随笔使用独立展示区
+- 照片详情页、照片手记详情页和随笔详情页采用不同排版
 - 后台支持登录、发布、编辑、删除、批量删除
 - 图片上传到 Supabase Storage
 - 上传照片时尝试自动读取 EXIF 参数
@@ -44,12 +44,14 @@ cp .env.example .env.local
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `ADMIN_EMAILS`
 
 说明：
 
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` 用于前端和 SSR 公共访问
 - `NEXT_PUBLIC_SITE_URL` 用于 sitemap、robots 和 metadata 中生成正式链接
 - `SUPABASE_SERVICE_ROLE_KEY` 只能放服务端，不能暴露到浏览器
+- `ADMIN_EMAILS` 是可选的后台白名单，多个邮箱用英文逗号分隔。配置后只有这些邮箱可以进入后台
 
 ## Supabase 初始化
 
@@ -69,7 +71,7 @@ cp .env.example .env.local
 
 ## 内容模型
 
-系统现在支持两种内容类型：
+系统现在支持三条内容线：
 
 ### 1. 照片
 
@@ -91,7 +93,7 @@ cp .env.example .env.local
 - 首页瀑布流
 - 照片详情页
 
-### 2. 手记
+### 2. 照片手记
 
 主要字段：
 
@@ -104,7 +106,22 @@ cp .env.example .env.local
 展示方式：
 
 - 首页手记阅读区
-- 手记详情页
+- `/notes/[slug]` 详情页
+
+### 3. 随笔
+
+主要字段：
+
+- 标题
+- 摘要
+- 富文本正文
+- 分类：生活笔记、学习笔记、碎片笔记
+- 可选配图
+
+展示方式：
+
+- `/journals` 独立列表页
+- `/journals/[slug]` 随笔详情页
 
 ## 登录说明
 
@@ -118,6 +135,8 @@ cp .env.example .env.local
 
 - `/` 首页
 - `/notes/[slug]` 内容详情页
+- `/journals` 随笔列表页
+- `/journals/[slug]` 随笔详情页
 - `/admin` 内容管理页
 - `/admin/new` 新建内容
 - `/admin/edit/[id]` 编辑内容
@@ -126,7 +145,8 @@ cp .env.example .env.local
 ## 当前后台能力
 
 - 发布照片
-- 发布手记
+- 发布照片手记
+- 发布随笔
 - 保存草稿
 - 发布内容
 - 编辑已有内容

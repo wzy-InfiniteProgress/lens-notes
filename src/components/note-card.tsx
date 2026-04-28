@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Aperture, ArrowUpRight, MapPin, Sun, Timer } from "lucide-react";
 import type { Note } from "@/content/site";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 
 type NoteCardProps = {
   note: Note;
@@ -21,6 +22,9 @@ export function NoteCard({ note }: NoteCardProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             priority={Boolean(note.featured)}
+            quality={68}
+            placeholder="blur"
+            blurDataURL={IMAGE_BLUR_DATA_URL}
             className="object-cover transition duration-700 group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/25 via-transparent to-transparent transition duration-500 group-hover:from-slate-950/50" />
